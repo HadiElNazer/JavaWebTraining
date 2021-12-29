@@ -19,15 +19,11 @@ import com.luv2code.spring.firstTest.exception.MovieNotFoundException;
 
 @Service
 public class ListMovieServiceImpl implements ListMovieService {
-
+	@Autowired
 	private ListMovieRepositry listMovieRepositry;
-	private MovieRepositry movierepositry;
 
 	@Autowired
-	public ListMovieServiceImpl(ListMovieRepositry l, MovieRepositry m) {
-		listMovieRepositry = l;
-		movierepositry = m;
-	}
+	private MovieServiceImpl movieServiceImpl;
 
 	@Override
 	@Transactional
@@ -66,24 +62,19 @@ public class ListMovieServiceImpl implements ListMovieService {
 	@Override
 	@Transactional
 	public void addMovietoList(int theId, int idMovie) {
-		Movie existmovie = null;
-		ListMovie existList = null;
-		Optional<Movie> resultMovie = movierepositry.findById(idMovie);
-		if (resultMovie.isPresent()) {
-			existmovie = resultMovie.get();
-			Optional<ListMovie> resultListMovie = listMovieRepositry.findById(theId);
-			if (resultListMovie.isPresent()) {
-				existList = resultListMovie.get();
-				existmovie.setListId(existList);
-				movierepositry.save(existmovie);
-				existList.getMovies().add(existmovie);
-				listMovieRepositry.save(existList);
-			} else {
-				throw new ListMovieNotFoundException("not found listmovie id");
-			}
-		} else {
+
+		ListMovie existList = this.findById(theId);
+		if (existList == null) {
+			throw new ListMovieNotFoundException("not found listmovie id");
+		}
+		Movie existmovie = movieServiceImpl.findById(idMovie);
+		if (existmovie == null) {
 			throw new MovieNotFoundException("not found movie id");
 		}
+		existmovie.setListId(existList);
+		movieServiceImpl.updateMovie(idMovie, existmovie);
+		existList.getMovies().add(existmovie);
+		listMovieRepositry.save(existList);
 
 	}
 
@@ -96,25 +87,18 @@ public class ListMovieServiceImpl implements ListMovieService {
 	@Override
 	@Transactional
 	public void deleteMovieToList(int theId, int idMovie) {
-		Movie existmovie = null;
-		ListMovie existList = null;
-		Optional<Movie> resultMovie = movierepositry.findById(idMovie);
-		if (resultMovie.isPresent()) {
-			existmovie = resultMovie.get();
-			Optional<ListMovie> resultListMovie = listMovieRepositry.findById(theId);
-			if (resultListMovie.isPresent()) {
-				existList = resultListMovie.get();
-				existmovie.setListId(null);
-				movierepositry.save(existmovie);
-				existList.getMovies().remove(existmovie);
-				listMovieRepositry.save(existList);
-			} else {
-				throw new ListMovieNotFoundException("not found listmovie id");
-			}
-		} else {
+		ListMovie existList = this.findById(theId);
+		if (existList == null) {
+			throw new ListMovieNotFoundException("not found listmovie id");
+		}
+		Movie existmovie = movieServiceImpl.findById(idMovie);
+		if (existmovie == null) {
 			throw new MovieNotFoundException("not found movie id");
 		}
-
+		existmovie.setListId(null);
+		movieServiceImpl.updateMovie(idMovie, existmovie);
+		existList.getMovies().remove(existmovie);
+		listMovieRepositry.save(existList);
 	}
 
 	@Override

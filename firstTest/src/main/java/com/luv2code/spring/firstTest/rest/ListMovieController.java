@@ -18,7 +18,7 @@ import com.luv2code.spring.firstTest.entity.Movie;
 import com.luv2code.spring.firstTest.service.ListMovieService;
 
 @RestController
-@RequestMapping("/api/listmovie")
+@RequestMapping("/listmovie")
 public class ListMovieController {
 
 	private ListMovieService listMovieService;
@@ -62,7 +62,6 @@ public class ListMovieController {
 	@GetMapping("/ordered")
 	public List<ListMovie> getOrdered(HttpServletRequest request) {
 		String filter = request.getParameter("filter");
-		System.out.println(filter);
 		return listMovieService.findAllOrdered(filter);
 
 	}

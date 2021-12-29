@@ -17,7 +17,7 @@ import com.luv2code.spring.firstTest.entity.Movie;
 import com.luv2code.spring.firstTest.service.MovieService;
 
 @RestController
-@RequestMapping("/api/movie")
+@RequestMapping("/movie")
 public class MovieController {
 
 	MovieService movieservice;
